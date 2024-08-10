@@ -26,8 +26,10 @@ In this project, you can build your own C++ application or extend this Snake gam
 ## Basic Build Instructions
 
 1. Clone this repo.
-
-2. Make a build directory in the top level directory:
+```bash
+https://github.com/Infrx/CppND-Capstone-Snake-Game/blob/main/README.md
+```
+3. Make a build directory in the top level directory:
 ```bash
 mkdir build && cd build
 ```
