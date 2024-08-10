@@ -34,7 +34,12 @@ cmake .. & make
 ```bash
 ./SnakeGame
 ```
-
+## New Features
+- Receive game speed input from user
+- Press "Spacebar" to double the speed of snake and press it again to switch it to normal
+- Randomly generated obstacles (Player is immune until the snake eats the first food)
+- Crushing into obstacles also results in game over
+- Game results are copied into `/build/gameresults.txt`
 
 ## CC Attribution-ShareAlike 4.0 International
 
