@@ -20,4 +20,5 @@ string(STRIP ${SDL2_LIBRARIES} SDL2_LIBRARIES)
 target_link_libraries(SnakeGame ${SDL2_LIBRARIES} pthread)
 
 # Copy gameresults.txt to the build directory
-configure_file(${CMAKE_SOURCE_DIR}/src/gameresults.txt ${CMAKE_BINARY_DIR}/gameresults.txt COPYONLY)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/gameresults.txt
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
