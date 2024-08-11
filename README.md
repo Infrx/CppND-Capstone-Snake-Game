@@ -248,9 +248,31 @@ ObstaclePtr obstacles = std::make_shared<std::vector<Obstacle>>();
 
 in `game.cpp line 23`
 ```cpp
-std::future<void> future = std::async(std::launch::async, &Game::GenerateObstacle, this, obstacles);
-  future.wait();
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+void Game::BonusFoodTimer()
+{
+    const int bonusSeconds = 15;
+    auto startTime = std::chrono::high_resolution_clock::now();
+    std::unique_lock<std::mutex> lock(_mutex);
+    while (is_bonus_food_active)
+    {
+        lock.unlock();
+        auto current_Time = std::chrono::high_resolution_clock::now();
+        auto elapsed_Seconds = std::chrono::duration_cast<std::chrono::seconds>(current_Time - startTime).count();
+        int new_x = static_cast<int>(snake.head_x);
+        int new_y = static_cast<int>(snake.head_y);
+        if (elapsed_Seconds >= bonusSeconds)
+        {
+            // Bonus food time is up
+            is_bonus_food_active = false;
+            bonusFood.x = 1;
+            bonusFood.y = 1;
+            break;
+        }
+        lock.lock();
+        // Wait for a short interval or until the condition_variable is notified
+        _cond.wait_for(lock, std::chrono::milliseconds(800));
+    }
+}
 ```
 
 
