@@ -246,7 +246,7 @@ ObstaclePtr obstacles = std::make_shared<std::vector<Obstacle>>();
 <td> The project uses multithreading. </td>
 <td>
 
-in `game.cpp line 23`
+in `game.cpp line 207`
 ```cpp
 void Game::BonusFoodTimer()
 {
