@@ -1,5 +1,7 @@
 # CPPND: Capstone Snake Game Capstone Project
 
+<img src="snake_game.gif"/>
+
 
 ## Dependencies for Running Locally
 * cmake >= 3.7
@@ -40,6 +42,7 @@ cmake .. & make
 - Randomly generated obstacles (Player is immune until the snake eats the first food)
 - Crushing into obstacles also results in game over
 - Game results are copied into `/build/gameresults.txt`
+- Added bonus food which uses threading, gives +2 score
 
 ## Rubric Compliance
 -Loops, Functions, I/O - meet at least 2 criteria
