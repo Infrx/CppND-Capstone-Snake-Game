@@ -93,3 +93,20 @@ void Renderer::RenderObstacles(const std::shared_ptr<std::vector<Obstacle>>& obs
     SDL_RenderPresent(sdl_renderer);
 
 }
+
+void Renderer::RenderBonusFood(Snake const snake, SDL_Point const& food)
+{
+    SDL_Rect block;
+    block.w = screen_width / grid_width;
+    block.h = screen_height / grid_height;
+
+    // Render snake's body
+    SDL_SetRenderDrawColor(sdl_renderer, 0x00, 0xFF, 0x00, 0xFF);
+    for (SDL_Point const& point : snake.body) {
+        block.x = food.x * block.w;
+        block.y = food.y * block.h;
+        SDL_RenderFillRect(sdl_renderer, &block);
+    }
+    SDL_RenderPresent(sdl_renderer);
+
+}
