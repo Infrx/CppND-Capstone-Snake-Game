@@ -34,12 +34,8 @@ void Game::Run(Controller const &controller, Renderer &renderer,
     controller.HandleInput(running, snake);
     Update();
     renderer.Render(snake, food);
-
-    if (k == 0);
-    {
-        renderer.RenderObstacles(obstacles);
-        ++k;
-    }
+    renderer.RenderBonusFood(snake, bonusFood);
+    renderer.RenderObstacles(obstacles);
     
 
     frame_end = SDL_GetTicks();
@@ -109,6 +105,24 @@ void Game::Update()
         int new_y = static_cast<int>(snake.head_y);
 
         // Check if there's food over here
+        if (!is_bonus_food_active)
+        { // Check if bonus food is already active
+            PlaceBonusFood();
+            is_bonus_food_active = true;
+            bonusFoodThread = std::thread(&Game::BonusFoodTimer, this);
+            bonusFoodThread.detach();
+            already_appeared = true;
+        }
+        if (bonusFood.x == new_x && bonusFood.y == new_y) {
+            score += 2;
+            snake.GrowBody();
+            snake.speed += 0.02;
+            snake.defaultSpeed += 0.02;
+            snake.boostedSpeed += 0.04;
+            bonusFood.x = 1200;
+            bonusFood.y = 1200;
+            break;
+        }
         if (food.x == new_x && food.y == new_y) {
             score++;
             PlaceFood();
@@ -118,6 +132,8 @@ void Game::Update()
             snake.defaultSpeed += 0.02;
             snake.boostedSpeed += 0.04;
         }
+        
+        
     }
 }
 
@@ -151,5 +167,65 @@ void Game::GenerateObstacle(ObstaclePtr obstacles)
     }
 }
 
+void Game::PlaceBonusFood()
+{
+    int x, y;
+    while (true) {
+        x = random_w(engine);
+        y = random_h(engine);
+        // Check that the location is not occupied by a snake item before placing
+        // food.
+        int c = 0;
+
+        if (obstacles) // checks for obstacles before placing food
+        {
+            for (const auto& obs : *obstacles)
+            {
+                if (obs.x / 20 == x && obs.y / 20 == y)
+                    c++;
+            }
+        }
+
+        if (!snake.SnakeCell(x, y) && c == 0)
+        {
+            bonusFood.x = x;
+            bonusFood.y = y;
+            return;
+        }
+        else
+            PlaceBonusFood();
+    }
+}
+
+
 int Game::GetScore() const { return score; }
 int Game::GetSize() const { return snake.size; }
+
+
+
+
+void Game::BonusFoodTimer()
+{
+    const int bonusSeconds = 15;
+    auto startTime = std::chrono::high_resolution_clock::now();
+    std::unique_lock<std::mutex> lock(_mutex);
+    while (is_bonus_food_active)
+    {
+        lock.unlock();
+        auto current_Time = std::chrono::high_resolution_clock::now();
+        auto elapsed_Seconds = std::chrono::duration_cast<std::chrono::seconds>(current_Time - startTime).count();
+        int new_x = static_cast<int>(snake.head_x);
+        int new_y = static_cast<int>(snake.head_y);
+        if (elapsed_Seconds >= bonusSeconds)
+        {
+            // Bonus food time is up
+            is_bonus_food_active = false;
+            bonusFood.x = 1;
+            bonusFood.y = 1;
+            break;
+        }
+        lock.lock();
+        // Wait for a short interval or until the condition_variable is notified
+        _cond.wait_for(lock, std::chrono::milliseconds(800));
+    }
+}

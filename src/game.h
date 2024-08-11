@@ -12,7 +12,7 @@
 #include <mutex>
 #include <memory>
 #include "obstacle.h"
-
+#include <thread>
 class Game {
  public:
   Game(std::size_t grid_width, std::size_t grid_height, std::size_t screen_width, std::size_t screen_height);
@@ -29,6 +29,7 @@ class Game {
 
   Snake snake;
   SDL_Point food;
+  SDL_Point bonusFood;
   int _gridWidth{};
   int _gridHeight{};
   int _screenWidth{};
@@ -43,6 +44,12 @@ class Game {
   void PlaceFood();
   void Update();
   void GenerateObstacle(ObstaclePtr obstacles);
+  void PlaceBonusFood();
+  void BonusFoodTimer();
+  bool is_bonus_food_active{ false };
+  std::thread bonusFoodThread;
+  bool already_appeared{ false };
+  std::condition_variable _cond;
 };
 
 #endif
